@@ -63,3 +63,62 @@
     Sample decoded response:
     ---------------------------
     result: "Hello Pradeep"
+    
+   ---------------------------
+
+**Testing GreetEveryone:**  
+
+A.Create payload: 
+Refer to steps (1) and (2) above and create 2 individual payloads - prad_GreetRequest.payload and then ravi_GreetRequest.payload
+from the corresponding text payloads and merge them
+
+    cat prad_GreetRequest.txt
+    greeting : {
+	     first_name: "Pradeep"
+	     last_name: "HK"
+    }
+    
+    cat prad_GreetRequest.txt
+    greeting : {
+	     first_name: "Raviraj"
+	     last_name: "DM"
+    }
+    
+    dd if=prad_GreetRequest.payload >  GreetEveryoneRequest.payload  
+    dd if=ravi_GreetRequest.payload >> GreetEveryoneRequest.payload
+    
+B.Use curl inside docker to execute gRPC calls
+
+    curl --http2-prior-knowledge -X POST \
+         -H "Content-Type: application/grpc" \
+         -H "TE: trailers" \
+         --data-binary @GreetEveryoneRequest.payload \
+         http://<IP>:<PORT>/greet.GreetService/GreetEveryone \
+         -o resp.bin --trace-ascii dump.txt
+
+C.Decode the response
+
+
+    xxd -p -c 256 ./resp.bin
+    00000000110a0f48656c6c6f2050726164656570212000000000110a0f48656c6c6f205261766972616a2120 
+      
+    Note
+    - first byte (ie 00) represents the compression-algorithm
+    - next 4 bytes (ie 00000011) represents the message-length
+      11 in decimal is 17 and 17x2=34 octets
+      Split the response based on this
+      
+    PROTO_CMD="protoc -I ../../greetpb"
+    OUTPUT_MSG_TYPE="greet.GreetEveryoneResponse"
+    PROTO_FILE="greet.proto"      
+      
+    HEX_DUMP_RESP=00000000110a0f48656c6c6f20507261646565702120
+    HEX_DUMP_MSG=`echo $HEX_DUMP_RESP | awk '{print substr($1,11)}'`
+    echo $HEX_DUMP_MSG  | xxd -r -p | $PROTO_CMD --decode=$OUTPUT_MSG_TYPE $PROTO_FILE   
+    result: "Hello Pradeep! "
+
+    HEX_DUMP_RESP=00000000110a0f48656c6c6f205261766972616a2120
+    HEX_DUMP_MSG=`echo $HEX_DUMP_RESP | awk '{print substr($1,11)}'`
+    echo $HEX_DUMP_MSG  | xxd -r -p | $PROTO_CMD --decode=$OUTPUT_MSG_TYPE $PROTO_FILE 
+    result: "Hello Raviraj! "  
+         
