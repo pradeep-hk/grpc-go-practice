@@ -10,6 +10,12 @@
 2.Encode to create gRPC payload:
 
     #!/bin/sh
+    #
+    # Steps:
+    # - Encode using protoc command to get the binary data
+    # - Take hexdump of the binary
+    # - prefix it with compression-algorithm (00 for no compression) and message-length (in hexadecimal and in 4 bytes)
+    # - convert back to binary    
 
     PROTO_CMD="protoc -I ../../greetpb"
     INPUT_MSG_TYPE="greet.GreetRequest"
@@ -48,6 +54,14 @@
 **Decode gRPC response :**
 
     #!/bin/sh
+    #
+    # Steps:
+    # - Take hexdump of the binary
+    # - The first byte represents compression-algorithm (00 for no compression) 
+    #   and next 4 bytes represents the message-length (in hexadecimal)
+    #   So, the message starts from 11th octet
+    # - Convert the message portion of hexdump to binary
+    # - Decode using protoc
 
     PROTO_CMD="protoc -I ../../greetpb"
     OUTPUT_MSG_TYPE="greet.GreetResponse"
