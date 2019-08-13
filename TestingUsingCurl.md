@@ -71,7 +71,8 @@
 A.Create payload: 
 
 Refer to steps (1) and (2) above and create 2 individual payloads - prad_GreetRequest.payload and then ravi_GreetRequest.payload
-from the corresponding text payloads and merge them
+from the corresponding text payloads (remember to use INPUT_MSG_TYPE="greet.GreetEveryoneRequest")
+Merge the 2 payloads to mimic streaming input
 
     cat prad_GreetRequest.txt
     greeting : {
@@ -103,11 +104,12 @@ C.Decode the response
     xxd -p -c 256 ./resp.bin
     00000000110a0f48656c6c6f2050726164656570212000000000110a0f48656c6c6f205261766972616a2120 
       
-    Note
+    Note:
     - first byte (ie 00) represents the compression-algorithm
     - next 4 bytes (ie 00000011) represents the message-length
       11 in decimal is 17 and 17x2=34 octets
-      Split the response based on this
+      Split the response based on this ie
+      00000000110a0f48656c6c6f20507261646565702120   00000000110a0f48656c6c6f205261766972616a2120  
       
     PROTO_CMD="protoc -I ../../greetpb"
     OUTPUT_MSG_TYPE="greet.GreetEveryoneResponse"
