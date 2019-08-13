@@ -86,6 +86,7 @@ A.Create payload:
 
 Refer to steps (1) and (2) above and create 2 individual payloads - prad_GreetRequest.payload and then ravi_GreetRequest.payload
 from the corresponding text payloads (remember to use INPUT_MSG_TYPE="greet.GreetEveryoneRequest")
+
 Merge the 2 payloads to mimic streaming input
 
     cat prad_GreetRequest.txt
@@ -112,7 +113,7 @@ B.Use curl inside docker to execute gRPC calls
          http://<IP>:<PORT>/greet.GreetService/GreetEveryone \
          -o resp.bin --trace-ascii dump.txt
 
-C.Decode the response
+C.Decode the streaming response
 
 
     xxd -p -c 256 ./resp.bin
