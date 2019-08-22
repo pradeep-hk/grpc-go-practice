@@ -66,9 +66,8 @@
     PROTO_CMD="protoc -I ../../greetpb"
     OUTPUT_MSG_TYPE="greet.GreetResponse"
     PROTO_FILE="greet.proto"
-
-
-    HEX_DUMP_MSG=`xxd -p -c 256 ./resp.bin | awk '{print substr($1,11)}'`
+    
+    HEX_DUMP_MSG=`xxd -p ./resp.bin | tr -d '\n'| awk '{print substr($1,11)}'`
     echo $HEX_DUMP_MSG  | xxd -r -p | $PROTO_CMD --decode=$OUTPUT_MSG_TYPE $PROTO_FILE
    
 
