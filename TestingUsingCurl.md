@@ -94,7 +94,7 @@ Merge the 2 payloads to mimic streaming input
 	     last_name: "HK"
     }
     
-    cat prad_GreetRequest.txt
+    cat ravi_GreetRequest.txt
     greeting : {
 	     first_name: "Raviraj"
 	     last_name: "DM"
